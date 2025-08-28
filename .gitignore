@@ -1,1 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# PyTorch / Torch cache
+*.pt
+*.pth
+
+# Jupyter
+.ipynb_checkpoints
+
+# Others
 .DS_Store
