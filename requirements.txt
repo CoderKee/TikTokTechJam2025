@@ -1,0 +1,14 @@
+pandas
+numpy
+scikit-learn
+torch
+transformers
+huggingface_hub
+spacy
+nltk
+gensim
+matplotlib
+seaborn
+plotly
+beautifulsoup4
+scrapy
