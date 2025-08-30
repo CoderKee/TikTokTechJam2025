@@ -111,29 +111,34 @@ This component automatically labels Google Reviews using DeepSeek API:
 
 ## ML Model Training
 
-After generating labeled data through both rule-based checks and LLM-assisted labeling, we trained a **RoBERTa-based sequence classification model** to automatically classify reviews into four categories: Advertisement, Irrelevant Content, Rant without visiting, and None.
+After generating labeled data through both rule-based checks and LLM-assisted labeling, we trained a **DeBERTa-based sequence classification model** to automatically classify reviews into four categories: Advertisement, Irrelevant Content, Rant without visiting, and None.
 
 ### Dataset Preparation
 - Used the labeled dataset (`GPT-labels`) with **text_clean** as input.  
 - Converted labels into integers for modeling.  
 - Split data into **train (90%)** and **test (10%)** sets, maintaining class balance.  
-- Applied **oversampling** to underrepresented classes to handle data imbalance and improve model learning.  
+- Applied **oversampling** to underrepresented classes to handle data imbalance and improve model learning. This was done with inverse class frequency.
 
 ### Tokenization
-- Tokenized review text using the **RoBERTa tokenizer**, truncating and padding sequences to a fixed length of 256 tokens.  
+- Tokenized review text using the **DeBERTa tokenizer**, truncating and padding sequences to a fixed length of 256 tokens.  
 
 ### Model Architecture
-- Fine-tuned **`roberta-base`** for sequence classification with 4 output labels.  
-- Implemented **custom loss functions**:
-  - **Focal Loss** to handle class imbalance and emphasize difficult-to-classify examples.  
-  - Optional: **class-weighted Cross-Entropy** for additional balancing.
+- Fine-tuned **`microsoft/deberta-v3-base`** for sequence classification with 4 output labels.  
+- Implemented and compared **custom loss functions**:
+  - **Focal Loss** to handle class imbalance and emphasize difficult-to-classify examples.
+  - **Class-weighted Cross-Entropy** for class balancing with CE loss.
+- Used `attention_probs_dropout_prob = 0.2` for regularisation.
 
 ### Training Setup
-- **Batch size:** 16  
+- **Batch size:** 32 
 - **Learning rate:** 2e-5  
-- **Epochs:** 5  
-- **Weight decay:** 0.01  
-- **Evaluation:** Monitored metrics every 125 steps, including accuracy, macro F1-score, and per-class precision/recall/F1.  
+- **Epochs:** 5
+  - Used early stopping at 350 steps based on assessment of macro F1-score.
+  - Note that "epochs" is a misnomer after minority class oversampling.
+- **Weight decay:** 0.01
+- **Warmup_ratio:** 0.01
+   - 52 steps in our implementation, to give adaptive optimizer better statistics.
+- **Evaluation:** Monitored metrics and saved every 25 steps, including accuracy, macro F1-score, and per-class precision/recall/F1.  
 
 ### Metrics
 - Trained model was evaluated using:
@@ -141,7 +146,7 @@ After generating labeled data through both rule-based checks and LLM-assisted la
   - **Per-class precision, recall, and F1-score** to ensure all categories were learned effectively.  
 
 ### Outcome
-- The model learns both subtle textual cues and LLM-provided labels to classify reviews automatically.  
+- The model learns LLM-provided (GPT-3.5-turbo) labels from subtle textual cues to classify reviews automatically.
 - Balancing techniques and custom loss functions help mitigate bias toward the majority class.  
 - Final model serves as the core of **Toktok**, enabling automatic detection and filtering of unhelpful or irrelevant reviews across large datasets.
 
