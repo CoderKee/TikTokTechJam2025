@@ -2,6 +2,14 @@
 
 ---
 
+## Model weights
+
+We introduce the core of **TokTok**, a DeBERTa-based classifier of online reviews! You can find the model weights here for use with the rest of the Streamlit application.
+
+https://drive.google.com/drive/folders/1Tfeq5FFslgkq7fbAJVykR1EsBy5D8aP8?usp=sharing
+
+---
+
 ## Preprocess and Clean Data
 
 The preprocessing step ingests a concatenation of JSON objects, keeps only review-like objects (must include `user_id` & `gmap_id` and at least `text` or `rating`), and standardizes fields for modeling. Picture-only and response-only fragments are excluded.  
@@ -109,18 +117,17 @@ This component automatically labels Google Reviews using DeepSeek API:
 
 ---
 
-## Data Preprocessing
+## ML Model Training
+
+After generating labeled data through both rule-based checks and LLM-assisted labeling, we trained a **DeBERTa-based sequence classification model** to automatically classify reviews into four categories: Advertisement, Irrelevant Content, Rant without visiting, and None.
+
+### Data Preprocessing
 
 - Text converted to lowercase
 - Lemmatization (grouping together the inflected forms of a word)
 - Punctuation removal
 - Stop word removal (little semantic value)
-
----
-
-## ML Model Training
-
-After generating labeled data through both rule-based checks and LLM-assisted labeling, we trained a **DeBERTa-based sequence classification model** to automatically classify reviews into four categories: Advertisement, Irrelevant Content, Rant without visiting, and None.
+- The resultant texts are henceforth used as **text_clean**.
 
 ### Dataset Preparation
 - Used the labeled dataset (`GPT-labels`) with **text_clean** as input.  
