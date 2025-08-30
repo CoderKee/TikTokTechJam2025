@@ -37,7 +37,8 @@ Additional hygiene:
 - Cast core types (user_id/name/gmap_id→string, rating→nullable int).
 
 This helps to produce a consistent, privacy-aware table that’s easy to explore, label with an LLM, and train models on—while removing obvious noise and preserving useful metadata (timing, images, responses).
-
+---
+# Rule-based Policy Checks
 ---
 # Feature Engineering
 ---
@@ -57,7 +58,22 @@ It also helps to detects ratings are that are intentionally misleading (e.g. pro
 ---
 # LLM Prompt Engineering 
 ---
-# Rule-based Policy Checks
+
+Review Classification with DeepSeek API
+This part of the project focuses on automatically labeling Google Reviews using the DeepSeek API and Python. Reviews are classified into four categories:
+Advertisement – Promotes another business (not the reviewed one).
+Irrelevant Content – Off-topic, such as politics or personal stories.
+Rant without visiting – Angry criticism without actually visiting the place.
+None – Legitimate review based on an actual experience.
+Overview
+Reviews are processed in batches for efficiency.
+The system uses custom prompts to ensure consistent classification according to defined rules.
+Parallel processing allows multiple batches to be classified simultaneously.
+Results are stored in the df_clean DataFrame under the column GPT-label.
+Key Points
+Uses Hugging Face / DeepSeek models for NLP-based classification.
+Combines rule-based guidance with AI-powered predictions.
+Designed to filter low-quality or irrelevant reviews automatically, improving downstream analysis or moderation.
 ---
 # ML Model Training
 ---
