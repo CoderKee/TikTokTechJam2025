@@ -30,9 +30,38 @@ This produces a **consistent, privacy-aware table** that’s easy to explore, la
 
 ---
 
-## Rule-based Policy Checks
+## Rule-Based Policy Checks
 
-*(Add your description of the rule-based policy checks here. You can mention keyword filtering, preliminary categorization, etc.)*
+Before training our ML model, we implemented a **rule-based system** to preliminarily classify reviews into categories. This system serves as both a filtering mechanism and a way to generate labeled samples for training.
+
+### Purpose
+- Quickly identify and label reviews containing obvious **spam or off-topic content**.  
+- Create a **balanced dataset** for model training by sampling equal numbers from each category.  
+- Provide **mutually-exclusive labels** to help guide the ML model.
+
+### Categories and Rules
+
+1. **Advertisement**  
+   - Detects promotional content such as URLs, competitor mentions, sales, discounts, subscriptions, or calls-to-action (e.g., “buy now”, “visit our page”).  
+
+2. **Irrelevant Content**  
+   - Detects off-topic text related to politics, jobs, education, personal life, entertainment, or unrelated products.  
+
+3. **Rant Without Visit**  
+   - Detects reviews from people who have **not actually visited** the place, including phrases like “never been”, “heard about it”, “just passing by”, or “planning to visit”.  
+
+4. **None**  
+   - Reviews that **do not match any of the above rules** and are likely genuine.
+
+### Methodology
+- Each review is checked against all rules.  
+- **Priority assignment**: RantWithoutVisit > Advertisement > Irrelevant > None.  
+- Samples are drawn to create a **balanced dataset** with roughly equal numbers of reviews from each category (up to 3,500 per class).  
+
+### Outcome
+- Produces a **high-quality labeled dataset** for model training.  
+- Helps the ML model focus on subtle patterns beyond obvious rule-based signals.  
+- Ensures the final training set is **balanced**, reducing bias toward the majority “normal” reviews.
 
 ---
 
@@ -82,5 +111,37 @@ This component automatically labels Google Reviews using DeepSeek API:
 
 ## ML Model Training
 
-*(Add your description of the model training process here. Include info about model architecture, dataset, evaluation metrics like precision/recall/F1, and fine-tuning.)*
+After generating labeled data through both rule-based checks and LLM-assisted labeling, we trained a **RoBERTa-based sequence classification model** to automatically classify reviews into four categories: Advertisement, Irrelevant Content, Rant without visiting, and None.
+
+### Dataset Preparation
+- Used the labeled dataset (`GPT-labels`) with **text_clean** as input.  
+- Converted labels into integers for modeling.  
+- Split data into **train (90%)** and **test (10%)** sets, maintaining class balance.  
+- Applied **oversampling** to underrepresented classes to handle data imbalance and improve model learning.  
+
+### Tokenization
+- Tokenized review text using the **RoBERTa tokenizer**, truncating and padding sequences to a fixed length of 256 tokens.  
+
+### Model Architecture
+- Fine-tuned **`roberta-base`** for sequence classification with 4 output labels.  
+- Implemented **custom loss functions**:
+  - **Focal Loss** to handle class imbalance and emphasize difficult-to-classify examples.  
+  - Optional: **class-weighted Cross-Entropy** for additional balancing.
+
+### Training Setup
+- **Batch size:** 16  
+- **Learning rate:** 2e-5  
+- **Epochs:** 5  
+- **Weight decay:** 0.01  
+- **Evaluation:** Monitored metrics every 125 steps, including accuracy, macro F1-score, and per-class precision/recall/F1.  
+
+### Metrics
+- Trained model was evaluated using:
+  - **Accuracy** and **macro F1-score** for overall performance.  
+  - **Per-class precision, recall, and F1-score** to ensure all categories were learned effectively.  
+
+### Outcome
+- The model learns both subtle textual cues and LLM-provided labels to classify reviews automatically.  
+- Balancing techniques and custom loss functions help mitigate bias toward the majority class.  
+- Final model serves as the core of **Toktok**, enabling automatic detection and filtering of unhelpful or irrelevant reviews across large datasets.
 
