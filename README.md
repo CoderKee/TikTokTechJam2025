@@ -1,12 +1,33 @@
 # TikTokTechJam2025
 
+We introduce **TokTok**, an automated classifier for online reviews! We detect and flag violations of three policies:
+
+1. **Advertisement**  
+
+2. **Irrelevant Content**  
+
+3. **Rant Without Visit**  
+
+![An example review](data/review_example.png)
+
+![Another example review](data/Charlatans.png)
+
+This greatly reduces HITL requirements for online review trustworthiness, thereby improving quality of user experience and reducing fraudulent activity. We use a lightweight DeBERTa classifier to detect violations, then a Llama-3.1-8B-Instruct model to explain review classification. All you need is to copy-paste a suspect review, or upload a CSV!
+
 ---
+## Usage
 
-## Model weights
+Replace `token = "secret_token"` in `llama_explain.py` with your hf token to run. Note that this requires access to Llama-3.1-8B-Instruct.
 
-We introduce the core of **TokTok**, a DeBERTa-based classifier of online reviews! You can find the model weights here for use with the rest of the Streamlit application.
+At least 8GB of VRAM is needed to run the applet locally, if Llama is enabled for explanations.
+
+### Model weights
+
+The core of **TokTok**, a DeBERTa-based classifier of online reviews! You can find the model weights here for use with the rest of the Streamlit application.
 
 https://drive.google.com/drive/folders/1Tfeq5FFslgkq7fbAJVykR1EsBy5D8aP8?usp=sharing
+
+Remember to replace `model_path` with the location of this directory.
 
 ---
 
