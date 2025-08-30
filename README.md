@@ -9,7 +9,7 @@ The preprocessing step ingests a concatenation of JSON objects, keeps only revie
 The pipeline appends the following columns to the dataframe:
 
 - `text_raw` – Original review text (kept for audit/demos).  
-- `text_clean` – Lightly normalized text with PII tokens redacted to `<URL>`, `<EMAIL>`, `<PHONE>`, `<HANDLE>` (regex used only for redaction).  
+- `text_clean` – Lightly normalized text with PII tokens redacted to `<URL>`, `<EMAIL>`, `<PHONE>`, `<HANDLE>` (regex used only for redaction). Preprocessing pipeline applied, as discussed below.
 - `time_dt_utc` – Review timestamp converted from ms to UTC datetime.  
 - `review_year` / `review_month` / `review_dow` / `review_hour` – Calendar features derived from `time_dt_utc`.  
 - `resp_text` – Business response text (if any).  
@@ -106,6 +106,15 @@ This component automatically labels Google Reviews using DeepSeek API:
 - Uses **Hugging Face / DeepSeek models** for NLP-based classification.  
 - Combines **rule-based guidance** with AI-powered predictions.  
 - Designed to **filter low-quality or irrelevant reviews** automatically, improving downstream analysis and moderation.
+
+---
+
+## Data Preprocessing
+
+- Text converted to lowercase
+- Lemmatization (grouping together the inflected forms of a word)
+- Punctuation removal
+- Stop word removal (little semantic value)
 
 ---
 
